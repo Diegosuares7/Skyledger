@@ -8,24 +8,33 @@ import {
   Account as XmlAccount,
   JournalLocalAmountElement,
 } from '../entities/xml/skyledger-xml.entity';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
-export const transformXmlToReport = (xml: SkyledgerXml): SkyLedgerReport => {
-  const journals = transformJournals(xml.Ledger.Record.Journal);
+export const transformXmlToReport = (xml: SkyledgerXml, configCompanyCodePath: string): SkyLedgerReport => {
+  const journals = transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
   return { journals };
 };
 
-function transformJournals(xmlJournals: XmlJournal[]): Journal[] {
-  const journalsFilteredByEmptyAccounts = xmlJournals.filter((x) => !isEmpty(x.Accounts));
-  return journalsFilteredByEmptyAccounts.map((xmlJournal) => transformXmlJournalToJournalReport(xmlJournal));
+function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePath: string): Journal[] {
+  const journalsFilteredByEmptyAccounts = xmlJournals.filter((x) => !isEmpty(x.Accounts.Account));
+  const journalsFilteredByCompanyCode = filterByCompanyCode(journalsFilteredByEmptyAccounts, configCompanyCodePath);
+  return journalsFilteredByCompanyCode.map((xmlJournal) => transformXmlJournalToJournalReport(xmlJournal));
+}
+
+function filterByCompanyCode(xmlJournals: XmlJournal[], configPath: string): XmlJournal[] {
+  const companyCodeConfigPath = resolve(configPath);
+  const companyCodeConfig = JSON.parse(readFileSync(companyCodeConfigPath, 'utf8'));
+  return xmlJournals.filter((xmlJournal) => companyCodeConfig.validCodes.includes(xmlJournal.CompanyCode));
 }
 
 function transformXmlJournalToJournalReport(xmlJournal: XmlJournal): Journal {
   const journal: Journal = {} as Journal;
   journal.accountPeriod = xmlJournal.AccountPeriod;
   journal.companyCode = xmlJournal.CompanyCode;
-  journal.accounts = isEmpty(xmlJournal.Accounts)
-    ? []
-    : xmlJournal.Accounts.Account.map((account: XmlAccount) => transformXmlAccountToReportAcount(account));
+  journal.accounts = xmlJournal.Accounts.Account.map((account: XmlAccount) =>
+    transformXmlAccountToReportAcount(account),
+  );
   return journal;
 }
 
