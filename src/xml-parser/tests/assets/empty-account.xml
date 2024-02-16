@@ -1,0 +1,23 @@
+<Ledger>
+  <Header>
+    <Date>20240105</Date>
+    <Airline>JA</Airline>
+  </Header>
+  <Record>
+    <Journal>
+      <AccountPeriod>202401</AccountPeriod>
+      <CompanyCode>DN</CompanyCode>
+      <JournalEntry>DN_BRG</JournalEntry>
+      <JournalEntryDescription>Bridge Journal Entry</JournalEntryDescription>
+      <JournalLocalAmounts />
+      <HostDebitAmount>0.00</HostDebitAmount>
+      <HostCreditAmount>0.00</HostCreditAmount>
+      <HostTotalAmount>0.00</HostTotalAmount>
+      <HostCurrency>ARS</HostCurrency>
+      <Accounts />
+    </Journal>
+  </Record>
+  <Trailer>
+    <RecordCount>270</RecordCount>
+  </Trailer>
+</Ledger>

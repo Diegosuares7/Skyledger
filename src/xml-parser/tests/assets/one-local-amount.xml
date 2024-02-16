@@ -1,0 +1,49 @@
+<Ledger>
+  <Header>
+    <Date>20240105</Date>
+    <Airline>JA</Airline>
+  </Header>
+  <Record>
+    <Journal>
+      <AccountPeriod>202402</AccountPeriod>
+      <CompanyCode>WJ</CompanyCode>
+      <JournalEntry>WJ_BRG</JournalEntry>
+      <JournalEntryDescription>Bridge Journal Entry </JournalEntryDescription>
+      <JournalLocalAmounts>
+        <JournalLocalAmount>
+          <CurrencyCode>ARS</CurrencyCode>
+          <DebitAmount>-1,774.66</DebitAmount>
+          <CreditAmount>1,774.66</CreditAmount>
+          <TotalAmount>0.00</TotalAmount>
+        </JournalLocalAmount>
+      </JournalLocalAmounts>
+      <HostDebitAmount>-1,774.66</HostDebitAmount>
+      <HostCreditAmount>1,774.66</HostCreditAmount>
+      <HostTotalAmount>0.00</HostTotalAmount>
+      <HostCurrency>ARS</HostCurrency>
+      <Accounts>
+        <Account>
+          <AccountName>210-05-01-160</AccountName>
+          <AccountDescription>Ingresos Brutos por Pagar</AccountDescription>
+          <CenterName>800-000</CenterName>
+          <CenterDescription />
+          <AccountLocalAmounts>
+            <AccountLocalAmount>
+              <CurrencyCode>ARS</CurrencyCode>
+              <DebitAmount>-516.15</DebitAmount>
+              <CreditAmount>516.15</CreditAmount>
+              <TotalAmount>0.00</TotalAmount>
+            </AccountLocalAmount>
+          </AccountLocalAmounts>
+          <HostCurrency>ARS</HostCurrency>
+          <HostDebitAmount>-516.15</HostDebitAmount>
+          <HostCreditAmount>516.15</HostCreditAmount>
+          <HostTotalAmount>0.00</HostTotalAmount>
+        </Account>
+      </Accounts>
+    </Journal>
+  </Record>
+  <Trailer>
+    <RecordCount>270</RecordCount>
+  </Trailer>
+</Ledger>

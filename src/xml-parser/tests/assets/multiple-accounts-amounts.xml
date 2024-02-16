@@ -1,0 +1,105 @@
+<Ledger>
+	<Header>
+		<Date>20240105</Date>
+		<Airline>JA</Airline>
+	</Header>
+	<Record>
+		<Journal>
+			<AccountPeriod>202401</AccountPeriod>
+			<CompanyCode>JA</CompanyCode>
+			<JournalEntry>JA_BRG</JournalEntry>
+			<JournalEntryDescription>Bridge Journal Entry</JournalEntryDescription>
+			<JournalLocalAmounts>
+				<JournalLocalAmount>
+					<CurrencyCode>GBP</CurrencyCode>
+					<DebitAmount>6,143.19</DebitAmount>
+					<CreditAmount>-6,143.19</CreditAmount>
+					<TotalAmount>0.00</TotalAmount>
+				</JournalLocalAmount>
+				<JournalLocalAmount>
+					<CurrencyCode>PEN</CurrencyCode>
+					<DebitAmount>1,050,951.13</DebitAmount>
+					<CreditAmount>-1,050,951.13</CreditAmount>
+					<TotalAmount>0.00</TotalAmount>
+				</JournalLocalAmount>
+			</JournalLocalAmounts>
+			<HostDebitAmount>6,670,339,716.00</HostDebitAmount>
+			<HostCreditAmount>-6,670,339,716.00</HostCreditAmount>
+			<HostTotalAmount>0.00</HostTotalAmount>
+			<HostCurrency>CLP</HostCurrency>
+			<Accounts>
+				<Account>
+					<AccountName>210-05-01-011</AccountName>
+					<AccountDescription>Retencion Impuesto pais 30
+</AccountDescription>
+					<CenterName>800-000</CenterName>
+					<CenterDescription />
+					<AccountLocalAmounts>
+						<AccountLocalAmount>
+							<CurrencyCode>CLP</CurrencyCode>
+							<DebitAmount>95,872,440.00</DebitAmount>
+							<CreditAmount>0.00</CreditAmount>
+							<TotalAmount>95,872,440.00</TotalAmount>
+						</AccountLocalAmount>
+						<AccountLocalAmount>
+							<CurrencyCode>CLP</CurrencyCode>
+							<DebitAmount>95,872,440.00</DebitAmount>
+							<CreditAmount>0.00</CreditAmount>
+							<TotalAmount>95,872,440.00</TotalAmount>
+						</AccountLocalAmount>
+					</AccountLocalAmounts>
+					<HostCurrency>CLP</HostCurrency>
+					<HostDebitAmount>10,429,403.00</HostDebitAmount>
+					<HostCreditAmount>-13,149,384.00</HostCreditAmount>
+					<HostTotalAmount>-2,719,981.00</HostTotalAmount>
+				</Account>
+				<Account>
+					<AccountName>110-04-08-310</AccountName>
+					<AccountDescription>Cuentas por Cobrar SafetPay</AccountDescription>
+					<CenterName>800-000</CenterName>
+					<CenterDescription />
+					<AccountLocalAmounts>
+						<AccountLocalAmount>
+							<CurrencyCode>CLP</CurrencyCode>
+							<DebitAmount>95,872,440.00</DebitAmount>
+							<CreditAmount>0.00</CreditAmount>
+							<TotalAmount>95,872,440.00</TotalAmount>
+						</AccountLocalAmount>
+						<AccountLocalAmount>
+							<CurrencyCode>CLP</CurrencyCode>
+							<DebitAmount>95,872,440.00</DebitAmount>
+							<CreditAmount>0.00</CreditAmount>
+							<TotalAmount>95,872,440.00</TotalAmount>
+						</AccountLocalAmount>
+					</AccountLocalAmounts>
+					<HostCurrency>CLP</HostCurrency>
+					<HostDebitAmount>95,872,440.00</HostDebitAmount>
+					<HostCreditAmount>0.00</HostCreditAmount>
+					<HostTotalAmount>95,872,440.00</HostTotalAmount>
+				</Account>
+				<Account>
+					<AccountName>210-02-04-106</AccountName>
+					<AccountDescription>Tasas de embarque recaudadas Brasil</AccountDescription>
+					<CenterName>800-000</CenterName>
+					<CenterDescription />
+					<AccountLocalAmounts>
+						<AccountLocalAmount>
+							<CurrencyCode>COP</CurrencyCode>
+							<DebitAmount>177,070.00</DebitAmount>
+							<CreditAmount>0.00</CreditAmount>
+							<TotalAmount>177,070.00</TotalAmount>
+						</AccountLocalAmount>
+					</AccountLocalAmounts>
+					<HostCurrency>CLP</HostCurrency>
+					<HostDebitAmount>9,264,938.00</HostDebitAmount>
+					<HostCreditAmount>-9,704,440.00</HostCreditAmount>
+					<HostTotalAmount>-439,502.00</HostTotalAmount>
+				</Account>
+			</Accounts>
+		</Journal>
+		
+	</Record>
+	<Trailer>
+		<RecordCount>270</RecordCount>
+	</Trailer>
+</Ledger>
