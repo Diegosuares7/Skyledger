@@ -184,7 +184,7 @@ const xmlData: SkyledgerXml = {
 };
 
 describe('transformXmlToReport', () => {
-  it('Prueba parseo basica transformacion de entidades', () => {
+  it('Prueba parseo basica transformacion de entidades', async () => {
     // Mock de datos XML de entrada
 
     const expectedJournals: Journal[] = [
@@ -231,14 +231,14 @@ describe('transformXmlToReport', () => {
     ];
 
     // Llama a la función para transformar XML a reporte
-    const result: SkyLedgerReport = transformXmlToReport(xmlData, __dirname + '/company-code.test.config.json');
+    const result: SkyLedgerReport = await transformXmlToReport(xmlData, __dirname + '/company-code.test.config.json');
 
     // Comprueba si el resultado es igual al esperado
     expect(result).toEqual({ journals: expectedJournals });
   });
 });
 
-it('Modifico un company name para ver si lo filtra de los resultados', () => {
+it('Modifico un company name para ver si lo filtra de los resultados', async () => {
   // Modify company name in XML data
   xmlData.Ledger.Record.Journal[1].CompanyCode = 'JB';
 
@@ -267,13 +267,13 @@ it('Modifico un company name para ver si lo filtra de los resultados', () => {
   ];
 
   // Call the function to transform XML to report
-  const filteredResult: SkyLedgerReport = transformXmlToReport(xmlData, __dirname + '/company-code.test.config.json');
+  const filteredResult = await transformXmlToReport(xmlData, __dirname + '/company-code.test.config.json');
 
   // Check if the result matches the expected filtered output
   expect(filteredResult).toEqual({ journals: expectedFilteredJournals });
 });
 
-it('Vuelvo al primer paso, y agrego un journal sin account para ver que lo filtre', () => {
+it('Vuelvo al primer paso, y agrego un journal sin account para ver que lo filtre', async () => {
   // Modify XML data to include a journal with an empty account array
   xmlData.Ledger.Record.Journal.push({
     AccountPeriod: '2024-02',
@@ -337,7 +337,7 @@ it('Vuelvo al primer paso, y agrego un journal sin account para ver que lo filtr
   ];
 
   // Call the function to transform XML to report
-  const result: SkyLedgerReport = transformXmlToReport(xmlData, __dirname + '/company-code.test.config.json');
+  const result = await transformXmlToReport(xmlData, __dirname + '/company-code.test.config.json');
 
   // Check if the result matches the expected output, excluding journals with empty account arrays
   expect(result.journals).toEqual(expectedJournals);

@@ -1,31 +1,37 @@
+import { readFile } from 'fs/promises';
+import { resolve } from 'path';
 import { Account } from '../entities/skyledger-transformed-report/account';
 import { Amount } from '../entities/skyledger-transformed-report/amount';
 import { Journal } from '../entities/skyledger-transformed-report/journal';
 import { SkyLedgerReport } from '../entities/skyledger-transformed-report/skyledger-report';
 import {
-  SkyledgerXml,
-  Journal as XmlJournal,
-  Account as XmlAccount,
   JournalLocalAmountElement,
+  SkyledgerXml,
+  Account as XmlAccount,
+  Journal as XmlJournal,
 } from '../entities/xml/skyledger-xml.entity';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { FileNotFoundError } from '../xml-parser/exceptions/invalid-path.error';
 
-export const transformXmlToReport = (xml: SkyledgerXml, configCompanyCodePath: string): SkyLedgerReport => {
-  const journals = transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
+export const transformXmlToReport = async (
+  xml: SkyledgerXml,
+  configCompanyCodePath: string,
+): Promise<SkyLedgerReport> => {
+  const journals = await transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
   return { journals };
 };
 
-function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePath: string): Journal[] {
-  const journalsFilteredByEmptyAccounts = xmlJournals.filter((x) => !isEmpty(x.Accounts.Account));
-  const journalsFilteredByCompanyCode = filterByCompanyCode(journalsFilteredByEmptyAccounts, configCompanyCodePath);
-  return journalsFilteredByCompanyCode.map((xmlJournal) => transformXmlJournalToJournalReport(xmlJournal));
-}
-
-function filterByCompanyCode(xmlJournals: XmlJournal[], configPath: string): XmlJournal[] {
-  const companyCodeConfigPath = resolve(configPath);
-  const companyCodeConfig = JSON.parse(readFileSync(companyCodeConfigPath, 'utf8'));
-  return xmlJournals.filter((xmlJournal) => companyCodeConfig.validCodes.includes(xmlJournal.CompanyCode));
+async function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePath: string): Promise<Journal[]> {
+  const companyCodeConfigPath = resolve(configCompanyCodePath);
+  let codesConfig: { validCodes: string[] };
+  try {
+    codesConfig = JSON.parse(await readFile(companyCodeConfigPath, 'utf8'));
+  } catch (error) {
+    throw new FileNotFoundError();
+  }
+  const filteredJournals = xmlJournals.filter(
+    (x) => !isEmpty(x.Accounts.Account) && codesConfig.validCodes.includes(x.CompanyCode),
+  );
+  return filteredJournals.map((xmlJournal) => transformXmlJournalToJournalReport(xmlJournal));
 }
 
 function transformXmlJournalToJournalReport(xmlJournal: XmlJournal): Journal {
@@ -39,10 +45,17 @@ function transformXmlJournalToJournalReport(xmlJournal: XmlJournal): Journal {
 }
 
 function transformXmlAmountToReportAmount(xmlAmount: JournalLocalAmountElement): Amount {
+  const debitAmount = parseFloat(xmlAmount.DebitAmount);
+  const creditAmount = parseFloat(xmlAmount.CreditAmount);
+
+  if (isNaN(debitAmount) || isNaN(creditAmount)) {
+    throw new Error('Invalid debit or credit amount');
+  }
+
   return {
     currencyCode: xmlAmount.CurrencyCode,
-    debitAmount: parseFloat(xmlAmount.DebitAmount),
-    creditAmount: parseFloat(xmlAmount.CreditAmount),
+    debitAmount,
+    creditAmount,
   };
 }
 
@@ -58,5 +71,11 @@ function transformXmlAccountToReportAcount(account: XmlAccount): Account {
 }
 
 function isEmpty(obj: unknown): boolean {
-  return obj === undefined || (Array.isArray(obj) && obj.length === 0);
+  return (
+    obj === undefined ||
+    obj === null ||
+    (Array.isArray(obj) && obj.length === 0) ||
+    (typeof obj === 'string' && obj.length === 0) ||
+    (typeof obj === 'object' && Object.keys(obj).length === 0)
+  );
 }
