@@ -12,6 +12,15 @@
       "program": "${workspaceFolder}\\src\\main.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Jest Tests",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["test:file", "${fileBasenameNoExtension}.ts"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

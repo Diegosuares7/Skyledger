@@ -10,6 +10,7 @@
     "build": "tsc",
     "test": "jest",
     "lint": "eslint .",
+    "test:file": "jest --testPathPattern",
     "precommit": "npm run lint",
     "prepare": "husky",
     "format": "prettier --write \"src/**/*.ts\""
