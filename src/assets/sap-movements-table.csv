@@ -1,0 +1,4 @@
+accountType,debit,credit,debitCME,creditCME
+GL,40,50,,
+Cliente,1,11,9,19
+Proveedor,21,31,29,39
