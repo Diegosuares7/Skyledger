@@ -1,14 +1,16 @@
+import { handleStepError } from '../exceptions/step-error.handler';
+import { PROCESS_STEPS } from '../exceptions/steps.constants';
 import * as fs from 'fs';
 import { parseStringPromise } from 'xml2js';
 import {
-  SkyledgerXml,
-  Ledger,
-  Journal,
   Account,
+  Journal,
   JournalLocalAmountElement,
+  Ledger,
+  SkyledgerXml,
 } from '../entities/xml/skyledger-xml.entity';
-import { InvalidXmlError } from './exceptions/invalid-xml.error';
-import { FileNotFoundError } from './exceptions/invalid-path.error';
+import { InvalidXmlException } from './exceptions/invalid-xml.exception';
+import { XmlNotFoundException } from './exceptions/xml-not-found.exception';
 
 // Definir tipos para el XML parseado
 interface ParsedXml {
@@ -17,10 +19,14 @@ interface ParsedXml {
 
 // Función para leer el XML desde un archivo
 export async function readXmlFromAssets(path: string): Promise<SkyledgerXml> {
-  const xmlData = await readFile(path);
-  const parsedData = await parseXml(xmlData);
-  const formattedData = formatAccounts(parsedData);
-  return formattedData as SkyledgerXml;
+  try {
+    const xmlData = await readFile(path);
+    const parsedData = await parseXml(xmlData);
+    const formattedData = formatAccounts(parsedData);
+    return formattedData as SkyledgerXml;
+  } catch (error) {
+    throw handleStepError(error, PROCESS_STEPS.XML_PARSE);
+  }
 }
 
 async function readFile(path: string): Promise<string> {
@@ -29,7 +35,7 @@ async function readFile(path: string): Promise<string> {
     return data;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      throw new FileNotFoundError();
+      throw new XmlNotFoundException(path);
     }
     throw error;
   }
@@ -40,7 +46,7 @@ async function parseXml(xmlData: string): Promise<any> {
     const parsedData = await parseStringPromise(xmlData, { explicitArray: false });
     return parsedData;
   } catch (error) {
-    throw new InvalidXmlError();
+    throw new InvalidXmlException();
   }
 }
 

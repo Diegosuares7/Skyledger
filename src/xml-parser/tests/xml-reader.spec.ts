@@ -1,6 +1,6 @@
 import { SkyledgerXml } from '../../entities/xml/skyledger-xml.entity';
-import { FileNotFoundError } from '../exceptions/invalid-path.error';
-import { InvalidXmlError } from '../exceptions/invalid-xml.error';
+import { InvalidXmlException } from '../exceptions/invalid-xml.exception';
+import { XmlNotFoundException } from '../exceptions/xml-not-found.exception';
 import { readXmlFromAssets } from '../xml-reader';
 
 let result: SkyledgerXml; // Variable para almacenar el resultado de readXmlFromAssets
@@ -51,11 +51,11 @@ test('Parsear un caso real ', async () => {
 // Test for file not found scenario
 test('Devuelve un file not found si no encuentra el archivo', async () => {
   const xmlPath = rootDir + '/assets/non-existent-file.xml';
-  await expect(readXmlFromAssets(xmlPath)).rejects.toThrow(FileNotFoundError);
+  await expect(readXmlFromAssets(xmlPath)).rejects.toThrow(XmlNotFoundException);
 });
 
 // Test for XML parsing error scenario
 test('Tira error de parseo de xml si no puede resolver el archivo', async () => {
   const xmlPath = rootDir + '/assets/invalid-xml.xml';
-  await expect(readXmlFromAssets(xmlPath)).rejects.toThrow(InvalidXmlError);
+  await expect(readXmlFromAssets(xmlPath)).rejects.toThrow(InvalidXmlException);
 });

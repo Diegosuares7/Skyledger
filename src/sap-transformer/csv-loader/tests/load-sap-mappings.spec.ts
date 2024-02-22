@@ -1,3 +1,6 @@
+import { CSVEmptyException } from '../exceptions/csv-empty.exception';
+import { CSVFileNotFoundException } from '../exceptions/csv-file-not-found.exception';
+import { CSVValidationException } from '../exceptions/csv-validation.exception';
 import { loadCSVSAPInformation } from '../load-sap-mappings';
 
 describe('loadCSVSAPInformation', () => {
@@ -21,7 +24,7 @@ describe('loadCSVSAPInformation', () => {
       movementsFilePath: __dirname + '/../tests/assets/non-existent-file.csv',
       companyFilePath: __dirname + '/../tests/assets/non-existent-file.csv',
     };
-    await expect(loadCSVSAPInformation(paths)).rejects.toThrow();
+    await expect(loadCSVSAPInformation(paths)).rejects.toThrow(CSVFileNotFoundException);
   });
 
   it('should throw an error if CSV files are empty', async () => {
@@ -30,7 +33,7 @@ describe('loadCSVSAPInformation', () => {
       movementsFilePath: __dirname + '/../tests/assets/empty.csv',
       companyFilePath: __dirname + '/../tests/assets/empty.csv',
     };
-    await expect(loadCSVSAPInformation(paths)).rejects.toThrow();
+    await expect(loadCSVSAPInformation(paths)).rejects.toThrow(CSVEmptyException);
   });
 
   it('should throw an error if CSV files contain invalid data', async () => {
@@ -39,6 +42,6 @@ describe('loadCSVSAPInformation', () => {
       movementsFilePath: __dirname + '/../tests/assets/sap-movements-table.csv',
       companyFilePath: __dirname + '/../tests/assets/sap-company-code-table.csv',
     };
-    await expect(loadCSVSAPInformation(paths)).rejects.toThrow();
+    await expect(loadCSVSAPInformation(paths)).rejects.toThrow(CSVValidationException);
   });
 });

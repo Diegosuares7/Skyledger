@@ -1,35 +1,41 @@
+import { handleStepError } from '../exceptions/step-error.handler';
 import { AccountInfo } from '../entities/grouper/account-info.entity';
 import { GroupedJournals } from '../entities/grouper/grouped-journals';
 import { KeyGrouper } from '../entities/grouper/key-grouper.entity';
 import { SkyLedgerReport } from '../entities/skyledger-transformed-report/skyledger-report';
+import { PROCESS_STEPS } from '../exceptions/steps.constants';
 
 export function groupJournalsByFileToExport(report: SkyLedgerReport): Map<string, GroupedJournals> {
-  const reportMap = new Map<string, GroupedJournals>();
-  report.journals.forEach((journal) => {
-    const { companyCode, accountPeriod, accounts } = journal;
+  try {
+    const reportMap = new Map<string, GroupedJournals>();
+    report.journals.forEach((journal) => {
+      const { companyCode, accountPeriod, accounts } = journal;
 
-    accounts.forEach((account) => {
-      const { accountName, accountLocalAmounts } = account;
+      accounts.forEach((account) => {
+        const { accountName, accountLocalAmounts } = account;
 
-      accountLocalAmounts.forEach((amount) => {
-        const { currencyCode, debitAmount, creditAmount } = amount;
-        if (!isKeyValid(companyCode, accountPeriod, currencyCode) || !isTransactionValid(debitAmount, creditAmount)) {
-          return;
-        }
-        addAccountRegistryToMap(
-          reportMap,
-          companyCode,
-          currencyCode,
-          accountPeriod,
-          accountName,
-          debitAmount,
-          creditAmount,
-        );
+        accountLocalAmounts.forEach((amount) => {
+          const { currencyCode, debitAmount, creditAmount } = amount;
+          if (!isKeyValid(companyCode, accountPeriod, currencyCode) || !isTransactionValid(debitAmount, creditAmount)) {
+            return;
+          }
+          addAccountRegistryToMap(
+            reportMap,
+            companyCode,
+            currencyCode,
+            accountPeriod,
+            accountName,
+            debitAmount,
+            creditAmount,
+          );
+        });
       });
     });
-  });
 
-  return reportMap;
+    return reportMap;
+  } catch (error) {
+    throw handleStepError(error, PROCESS_STEPS.GROUP_REPORT_TO_FILES);
+  }
 }
 
 function isKeyValid(companyCode: string, accountPeriod: string, currencyCode: string): boolean {

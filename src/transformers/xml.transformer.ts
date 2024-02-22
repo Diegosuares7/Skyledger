@@ -10,14 +10,21 @@ import {
   Account as XmlAccount,
   Journal as XmlJournal,
 } from '../entities/xml/skyledger-xml.entity';
-import { FileNotFoundError } from '../xml-parser/exceptions/invalid-path.error';
+import { CompanyCodeNotFoundException } from './exceptions/company-code-config-not-found.exception';
+import { handleStepError } from '../exceptions/step-error.handler';
+import { PROCESS_STEPS } from '../exceptions/steps.constants';
+import { InvalidAmountException } from './exceptions/invalid-amount-exception';
 
 export const transformXmlToReport = async (
   xml: SkyledgerXml,
   configCompanyCodePath: string,
 ): Promise<SkyLedgerReport> => {
-  const journals = await transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
-  return { journals };
+  try {
+    const journals = await transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
+    return { journals };
+  } catch (error) {
+    throw handleStepError(error, PROCESS_STEPS.XML_TRANSFORM_TO_REPORT);
+  }
 };
 
 async function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePath: string): Promise<Journal[]> {
@@ -26,7 +33,7 @@ async function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePat
   try {
     codesConfig = JSON.parse(await readFile(companyCodeConfigPath, 'utf8'));
   } catch (error) {
-    throw new FileNotFoundError();
+    throw new CompanyCodeNotFoundException(configCompanyCodePath);
   }
   const filteredJournals = xmlJournals.filter(
     (x) => !isEmpty(x.Accounts.Account) && codesConfig.validCodes.includes(x.CompanyCode),
@@ -49,7 +56,7 @@ function transformXmlAmountToReportAmount(xmlAmount: JournalLocalAmountElement):
   const creditAmount = parseFloat(xmlAmount.CreditAmount);
 
   if (isNaN(debitAmount) || isNaN(creditAmount)) {
-    throw new Error('Invalid debit or credit amount');
+    throw new InvalidAmountException(JSON.stringify(xmlAmount));
   }
 
   return {

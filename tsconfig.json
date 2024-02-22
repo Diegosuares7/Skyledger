@@ -4,12 +4,16 @@
     "module": "commonjs",
     "outDir": "./dist",
     "rootDir": "./src",
+    "incremental": true,
     "strict": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "baseUrl": "./src"
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+    "baseUrl": "./src",
+    "paths": {
+      "@entities/*": ["./entities/*"],
+      "@exceptions/*": ["./exceptions/*"]
+    }
+  }
 }
