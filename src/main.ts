@@ -9,7 +9,7 @@ import { StepProcessHandledException } from './exceptions/step-process-handled.e
 
 const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
 
-async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
+export async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
   try {
     const sapInfo = await getPathsAndLoadSapInformation();
     const xmlParsed = await readXmlFromAssets(fileName);

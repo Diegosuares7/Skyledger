@@ -1,20 +1,13 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Ejecucion Dockerfile.
+El Dockerfile crea el contenedor que sera ejecutado por la Lambda. La manera de generar el contenedor y ejecutarlo es la siguiente:
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+* Creamos la Imagen de Docker.
+docker build --platform linux/amd64 -t docker-image:test .
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+* Ejecutamos el contenedor.
+docker run --platform linux/amd64 -p 9000:8080 docker-image:test
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+* Con el siguiente comando de curl ejecutamos el codigo.
+curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"payload":"hello world!"}'
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+# De esta manera nos aseguramos de que la lambda funcione correctamente.
