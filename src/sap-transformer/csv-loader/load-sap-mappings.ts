@@ -1,11 +1,11 @@
-import csvParser from 'csv-parser';
+import * as fastcsv from 'fast-csv';
 import { handleStepError } from '../../exceptions/step-error.handler';
 import { PROCESS_STEPS } from '../../exceptions/steps.constants';
 import * as fs from 'fs';
-import { SAPAccountMapper } from 'entities/sap-transformer/sap-account-mapper';
-import { SAPCompanyMapper } from 'entities/sap-transformer/sap-company-mapper';
-import { SAPMapper } from 'entities/sap-transformer/sap-mapper';
-import { SAPMovementMapper } from 'entities/sap-transformer/sap-movement.mapper';
+import { SAPAccountMapper } from '../../entities/sap-transformer/mappings/sap-account-mapper';
+import { SAPCompanyMapper } from '../../entities/sap-transformer/mappings/sap-company-mapper';
+import { SAPMapper } from '../../entities/sap-transformer/mappings/sap-mapper';
+import { SAPMovementMapper } from '../../entities/sap-transformer/mappings/sap-movement.mapper';
 import { CSVEmptyException } from './exceptions/csv-empty.exception';
 import { CSVFileNotFoundException } from './exceptions/csv-file-not-found.exception';
 import { CSVFileNotReadableException } from './exceptions/csv-file-not-readable.exception';
@@ -27,12 +27,7 @@ export async function loadCSVSAPInformation(paths: CSVPaths): Promise<SAPMapper>
     validateArrayLenghts(accountsMappings, movementsMappings, companyMappings);
 
     await validateArraysSchemas(accountsMappings, movementsMappings, companyMappings);
-
-    return {
-      accountsMappings,
-      movementsMappings,
-      companyMappings,
-    };
+    return generateDictionaries(accountsMappings, movementsMappings, companyMappings);
   } catch (error) {
     throw handleStepError(error, PROCESS_STEPS.CSV_INITIAL_LOAD);
   }
@@ -44,12 +39,12 @@ async function readCSV<T>(filePath: string): Promise<T[]> {
   }
   const results: T[] = [];
   try {
-    const stream = fs.createReadStream(filePath).pipe(csvParser());
+    const stream = fs.createReadStream(filePath).pipe(fastcsv.parse({ headers: true }));
     for await (const data of stream) {
       results.push(data as T);
     }
   } catch (error) {
-    throw new CSVFileNotReadableException(filePath);
+    throw new CSVFileNotReadableException(filePath, error.message);
   }
 
   return results;
@@ -85,4 +80,18 @@ async function validateSchema<T>(items: T[], schema: any): Promise<void> {
     const castedError = error as Error;
     throw new CSVValidationException(castedError.message);
   }
+}
+function generateDictionaries(
+  accountsMappings: SAPAccountMapper[],
+  movementsMappings: SAPMovementMapper[],
+  companyMappings: SAPCompanyMapper[],
+): SAPMapper {
+  const accountsDict = Object.fromEntries(accountsMappings.map((x) => [x.SLAccount, x]));
+  const movementsDict = Object.fromEntries(movementsMappings.map((x) => [x.accountType, x]));
+  const companiesDict = Object.fromEntries(companyMappings.map((x) => [x.SLCompanyCode, x]));
+  return {
+    accountsMappings: accountsDict,
+    movementsMappings: movementsDict,
+    companyMappings: companiesDict,
+  };
 }

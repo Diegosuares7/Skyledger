@@ -13,9 +13,9 @@ describe('loadCSVSAPInformation', () => {
 
     const sapMapper = await loadCSVSAPInformation(paths);
 
-    expect(sapMapper.accountsMappings).toHaveLength(3);
-    expect(sapMapper.movementsMappings).toHaveLength(3);
-    expect(sapMapper.companyMappings).toHaveLength(2);
+    expect(Object.keys(sapMapper.accountsMappings)).toHaveLength(3);
+    expect(Object.keys(sapMapper.movementsMappings)).toHaveLength(3);
+    expect(Object.keys(sapMapper.companyMappings)).toHaveLength(2);
   });
 
   it('should throw an error if CSV files are not found', async () => {

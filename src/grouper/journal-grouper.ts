@@ -12,7 +12,7 @@ export function groupJournalsByFileToExport(report: SkyLedgerReport): Map<string
       const { companyCode, accountPeriod, accounts } = journal;
 
       accounts.forEach((account) => {
-        const { accountName, accountLocalAmounts } = account;
+        const { accountName, accountLocalAmounts, accountDescription } = account;
 
         accountLocalAmounts.forEach((amount) => {
           const { currencyCode, debitAmount, creditAmount } = amount;
@@ -25,8 +25,10 @@ export function groupJournalsByFileToExport(report: SkyLedgerReport): Map<string
             currencyCode,
             accountPeriod,
             accountName,
+            accountDescription,
             debitAmount,
             creditAmount,
+            report.date,
           );
         });
       });
@@ -52,8 +54,10 @@ function addAccountRegistryToMap(
   currencyCode: string,
   accountPeriod: string,
   accountName: string,
+  accountDescription: string,
   debitAmount: number,
   creditAmount: number,
+  entryDate: string,
 ): void {
   const keyGrouper: KeyGrouper = {
     companyCode,
@@ -64,7 +68,7 @@ function addAccountRegistryToMap(
   let groupedJournals = reportMap.get(mapKey);
   if (!groupedJournals) {
     const accountsInfo: AccountInfo[] = [];
-    groupedJournals = { accountsInfo, keyGrouper };
+    groupedJournals = { accountsInfo, keyGrouper, entryDate };
     reportMap.set(mapKey, groupedJournals);
   }
 
@@ -72,6 +76,7 @@ function addAccountRegistryToMap(
     debitAmount,
     creditAmount,
     accountName,
+    accountDescription,
   });
 }
 

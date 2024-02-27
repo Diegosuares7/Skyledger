@@ -1,11 +1,14 @@
-import { ProcessResponse } from '@entities/process-response/process-response.entity';
-import { SAPMapper } from '@entities/sap-transformer/sap-mapper';
+import { ProcessResponse } from './entities/process-response/process-response.entity';
+import { SAPMapper } from './entities/sap-transformer/mappings/sap-mapper';
 import { createErrorResponse, createSuccesResponse } from './response-handler/create-process-response';
 import { groupJournalsByFileToExport } from './grouper/journal-grouper';
 import { loadCSVSAPInformation } from './sap-transformer/csv-loader/load-sap-mappings';
 import { transformXmlToReport } from './transformers/xml.transformer';
 import { readXmlFromAssets } from './xml-parser/xml-reader';
 import { StepProcessHandledException } from './exceptions/step-process-handled.exception';
+import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
 
@@ -18,9 +21,9 @@ async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
       `${__dirname}/transformers/assets/company-code.config.json`,
     );
     const groupedJournals = groupJournalsByFileToExport(skyledgerReport);
+    const excelsResults = createExcelsFiles(groupedJournals, sapInfo);
+    console.log(excelsResults);
     //TODO: Mapear cuentas con la info de SAP
-    console.log(sapInfo);
-    console.log(groupedJournals);
     return createSuccesResponse();
   } catch (error) {
     if (error instanceof StepProcessHandledException) {
