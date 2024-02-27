@@ -55,7 +55,7 @@ export function generateExcelFile(
 function createFileName(journals: GroupedJournals, mapper: SAPMapper, index: number): string {
   const sapCompanyCode = getSAPCompanyCode(journals.keyGrouper, mapper).substring(0, 2);
   const accountPeriod = journals.keyGrouper.accountPeriod;
-  const correlativeString = (index + 1).toString().padStart(2, '0');
+  const correlativeString = index.toString().padStart(2, '0');
   return `${sapCompanyCode}${accountPeriod}${correlativeString}.xlsx`;
 }
 
