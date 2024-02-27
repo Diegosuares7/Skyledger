@@ -6,16 +6,18 @@ import { loadCSVSAPInformation } from './sap-transformer/csv-loader/load-sap-map
 import { transformXmlToReport } from './transformers/xml.transformer';
 import { readXmlFromAssets } from './xml-parser/xml-reader';
 import { StepProcessHandledException } from './exceptions/step-process-handled.exception';
+import { getLatestFile } from './s3-latest-file/s3-latest-file';
 import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
+//const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
 
 async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
   try {
+    const file = await getLatestFile('test-jest');
     const sapInfo = await getPathsAndLoadSapInformation();
-    const xmlParsed = await readXmlFromAssets(fileName);
+    const xmlParsed = await readXmlFromAssets(file);
     const skyledgerReport = await transformXmlToReport(
       xmlParsed,
       `${__dirname}/transformers/assets/company-code.config.json`,

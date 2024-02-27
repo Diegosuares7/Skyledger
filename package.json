@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "@types/node": "^20.11.16",
+    "aws-sdk": "^2.1566.0",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.4.5",
     "fast-csv": "^5.0.1",
