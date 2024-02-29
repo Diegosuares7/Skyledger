@@ -9,6 +9,7 @@ import { StepProcessHandledException } from './exceptions/step-process-handled.e
 import { getLatestFile } from './s3-latest-file/s3-latest-file';
 import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
 import dotenv from 'dotenv';
+import { processExcelsResults } from './generate-excel/process-excels-results';
 dotenv.config();
 
 //const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
@@ -24,8 +25,7 @@ async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
     );
     const groupedJournals = groupJournalsByFileToExport(skyledgerReport);
     const excelsResults = createExcelsFiles(groupedJournals, sapInfo);
-    console.log(excelsResults);
-    //TODO: Mapear cuentas con la info de SAP
+    await processExcelsResults(excelsResults);
     return createSuccesResponse();
   } catch (error) {
     if (error instanceof StepProcessHandledException) {
