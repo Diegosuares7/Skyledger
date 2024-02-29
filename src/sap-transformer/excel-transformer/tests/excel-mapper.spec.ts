@@ -66,6 +66,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -132,6 +133,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -198,6 +200,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -264,6 +267,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -330,6 +334,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -397,6 +402,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -466,6 +472,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -533,6 +540,7 @@ describe('generateExcelFile', () => {
           SLCompanyCode: 'ABC',
         },
       },
+      roundLimitMappings: {},
     };
 
     const correlativeFile = 1;
@@ -614,6 +622,7 @@ it('should handle correct CME CODES  ', () => {
         SLCompanyCode: 'ABC',
       },
     },
+    roundLimitMappings: {},
   };
 
   const correlativeFile = 1;
@@ -689,6 +698,7 @@ it('should handle if CME CODES doesnt exist ', () => {
         SLCompanyCode: 'ABC',
       },
     },
+    roundLimitMappings: {},
   };
 
   const correlativeFile = 1;

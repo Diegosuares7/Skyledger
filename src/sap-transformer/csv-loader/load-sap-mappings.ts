@@ -10,24 +10,27 @@ import { CSVEmptyException } from './exceptions/csv-empty.exception';
 import { CSVFileNotFoundException } from './exceptions/csv-file-not-found.exception';
 import { CSVFileNotReadableException } from './exceptions/csv-file-not-readable.exception';
 import { CSVValidationException } from './exceptions/csv-validation.exception';
-import { accountsSchema, companySchema, movementsSchema } from './validations.schemas';
+import { accountsSchema, companySchema, movementsSchema, roundLimitSchema } from './validations.schemas';
 import { CSVPaths } from 'entities/skyledger-transformed-report/csv.paths';
+import { SAPRoundMapper } from 'entities/sap-transformer/mappings/sap-round-mapper';
 
 export async function loadCSVSAPInformation(paths: CSVPaths): Promise<SAPMapper> {
   try {
     const accountsPromise = readCSV<SAPAccountMapper>(paths.accountsFilePath);
     const movementsPromise = readCSV<SAPMovementMapper>(paths.movementsFilePath);
     const companyPromise = readCSV<SAPCompanyMapper>(paths.companyFilePath);
+    const roundLimitPromise = readCSV<SAPRoundMapper>(paths.roundLimitFilePath);
 
-    const [accountsMappings, movementsMappings, companyMappings] = await Promise.all([
+    const [accountsMappings, movementsMappings, companyMappings, roundLimitMappings] = await Promise.all([
       accountsPromise,
       movementsPromise,
       companyPromise,
+      roundLimitPromise,
     ]);
-    validateArrayLenghts(accountsMappings, movementsMappings, companyMappings);
+    validateArrayLenghts(accountsMappings, movementsMappings, companyMappings, roundLimitMappings);
 
-    await validateArraysSchemas(accountsMappings, movementsMappings, companyMappings);
-    return generateDictionaries(accountsMappings, movementsMappings, companyMappings);
+    await validateArraysSchemas(accountsMappings, movementsMappings, companyMappings, roundLimitMappings);
+    return generateDictionaries(accountsMappings, movementsMappings, companyMappings, roundLimitMappings);
   } catch (error) {
     throw handleStepError(error, PROCESS_STEPS.CSV_INITIAL_LOAD);
   }
@@ -54,8 +57,9 @@ function validateArrayLenghts(
   accountsMappings: SAPAccountMapper[],
   movementsMappings: SAPMovementMapper[],
   companyMappings: SAPCompanyMapper[],
+  roundLimitMappings: SAPRoundMapper[],
 ): void {
-  if (!accountsMappings.length || !movementsMappings.length || !companyMappings.length) {
+  if (!accountsMappings.length || !movementsMappings.length || !companyMappings.length || !roundLimitMappings.length) {
     throw new CSVEmptyException();
   }
 }
@@ -63,10 +67,12 @@ async function validateArraysSchemas(
   accountsMappings: SAPAccountMapper[],
   movementsMappings: SAPMovementMapper[],
   companyMappings: SAPCompanyMapper[],
+  roundLimitMappings: SAPRoundMapper[],
 ): Promise<void> {
   await validateSchema(accountsMappings, accountsSchema);
   await validateSchema(movementsMappings, movementsSchema);
   await validateSchema(companyMappings, companySchema);
+  await validateSchema(roundLimitMappings, roundLimitSchema);
 }
 
 //desactivo por dificiltad de mapear en yup el tipo correcto
@@ -85,13 +91,16 @@ function generateDictionaries(
   accountsMappings: SAPAccountMapper[],
   movementsMappings: SAPMovementMapper[],
   companyMappings: SAPCompanyMapper[],
+  roundLimitMappings: SAPRoundMapper[],
 ): SAPMapper {
   const accountsDict = Object.fromEntries(accountsMappings.map((x) => [x.SLAccount, x]));
   const movementsDict = Object.fromEntries(movementsMappings.map((x) => [x.accountType, x]));
   const companiesDict = Object.fromEntries(companyMappings.map((x) => [x.SLCompanyCode, x]));
+  const roundLimitDict = Object.fromEntries(roundLimitMappings.map((x) => [x.currencyCode, x]));
   return {
     accountsMappings: accountsDict,
     movementsMappings: movementsDict,
     companyMappings: companiesDict,
+    roundLimitMappings: roundLimitDict,
   };
 }

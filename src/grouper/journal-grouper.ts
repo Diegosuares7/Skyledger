@@ -44,8 +44,9 @@ function isKeyValid(companyCode: string, accountPeriod: string, currencyCode: st
   return !!companyCode && !!accountPeriod && !!currencyCode;
 }
 
+//VERIFICAR QUE ESTA DEFINICION ESTE BIEN Y QUE LOS CREDITOS PUEDAN SER POSTIIVOS
 function isTransactionValid(debitAmount: number, creditAmount: number): boolean {
-  return debitAmount > 0 || creditAmount > 0;
+  return debitAmount !== 0 || creditAmount !== 0;
 }
 
 function addAccountRegistryToMap(

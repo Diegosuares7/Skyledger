@@ -31,7 +31,7 @@ async function parseXml(xmlData: string): Promise<any> {
     const parsedData = await parseStringPromise(xmlData, { explicitArray: false });
     return parsedData;
   } catch (error) {
-    throw new InvalidXmlException();
+    throw new InvalidXmlException(error.message);
   }
 }
 

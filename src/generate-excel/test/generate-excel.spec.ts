@@ -2,6 +2,7 @@ import { createExcelFile } from '../../generate-excel/generate-excel';
 import { SAPExcelRow } from '../../entities/sap-transformer/excel/sap-row.entity';
 import { Workbook } from 'exceljs';
 import dotenv from 'dotenv';
+import { RowType } from '../../sap-transformer/excel-transformer/enums/row-type.enum';
 dotenv.config();
 
 describe('generateExcel', () => {
@@ -16,9 +17,9 @@ describe('generateExcel', () => {
   it('should generate an Excel file with headers and data rows', () => {
     // Arrange
     const rows = [
-      new SAPExcelRow('20220101', 'USD', '202201', 100, 'Descripción Cuenta 1', 'Nombre Cuenta 1'),
-      new SAPExcelRow('20220102', 'EUR', '202201', 200, 'Descripción Cuenta 2', 'Nombre Cuenta 2'),
-      new SAPExcelRow('20220103', 'GBP', '202201', 300, 'Descripción Cuenta 3', 'Nombre Cuenta 3'),
+      new SAPExcelRow('20220101', 'USD', '202201', 100, 'Descripción Cuenta 1', 'Nombre Cuenta 1', RowType.DEBIT),
+      new SAPExcelRow('20220102', 'EUR', '202201', 200, 'Descripción Cuenta 2', 'Nombre Cuenta 2', RowType.CREDIT),
+      new SAPExcelRow('20220103', 'GBP', '202201', 300, 'Descripción Cuenta 3', 'Nombre Cuenta 3', RowType.DEBIT),
     ];
 
     // Act

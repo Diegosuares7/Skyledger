@@ -27,4 +27,9 @@ const companySchema = yup.object().shape({
   SAPCompanyCode: yup.string().required(),
 });
 
-export { accountsSchema, movementsSchema, companySchema };
+const roundLimitSchema = yup.object().shape({
+  currencyCode: yup.string().required(),
+  value: yup.number().required(),
+});
+
+export { accountsSchema, movementsSchema, companySchema, roundLimitSchema };

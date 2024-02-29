@@ -9,6 +9,7 @@ describe('loadCSVSAPInformation', () => {
       accountsFilePath: __dirname + '/../tests/assets/sap-accounts-table.csv',
       movementsFilePath: __dirname + '/../tests/assets/sap-movements-table.csv',
       companyFilePath: __dirname + '/../tests/assets/sap-company-code-table.csv',
+      roundLimitFilePath: __dirname + '/../tests/assets/sap-round-table.csv',
     };
 
     const sapMapper = await loadCSVSAPInformation(paths);
@@ -16,6 +17,7 @@ describe('loadCSVSAPInformation', () => {
     expect(Object.keys(sapMapper.accountsMappings)).toHaveLength(3);
     expect(Object.keys(sapMapper.movementsMappings)).toHaveLength(3);
     expect(Object.keys(sapMapper.companyMappings)).toHaveLength(2);
+    expect(Object.keys(sapMapper.roundLimitMappings)).toHaveLength(2);
   });
 
   it('should throw an error if CSV files are not found', async () => {
@@ -23,6 +25,7 @@ describe('loadCSVSAPInformation', () => {
       accountsFilePath: __dirname + '/../tests/assets/non-existent-file.csv',
       movementsFilePath: __dirname + '/../tests/assets/non-existent-file.csv',
       companyFilePath: __dirname + '/../tests/assets/non-existent-file.csv',
+      roundLimitFilePath: __dirname + '/../tests/assets/sap-round-table.csv',
     };
     await expect(loadCSVSAPInformation(paths)).rejects.toThrow(CSVFileNotFoundException);
   });
@@ -32,6 +35,7 @@ describe('loadCSVSAPInformation', () => {
       accountsFilePath: __dirname + '/../tests/assets/empty.csv',
       movementsFilePath: __dirname + '/../tests/assets/empty.csv',
       companyFilePath: __dirname + '/../tests/assets/empty.csv',
+      roundLimitFilePath: __dirname + '/../tests/assets/sap-round-table.csv',
     };
     await expect(loadCSVSAPInformation(paths)).rejects.toThrow(CSVEmptyException);
   });
@@ -41,6 +45,7 @@ describe('loadCSVSAPInformation', () => {
       accountsFilePath: __dirname + '/../tests/assets/sap-accounts-invalid-data.csv',
       movementsFilePath: __dirname + '/../tests/assets/sap-movements-table.csv',
       companyFilePath: __dirname + '/../tests/assets/sap-company-code-table.csv',
+      roundLimitFilePath: __dirname + '/../tests/assets/sap-round-table.csv',
     };
     await expect(loadCSVSAPInformation(paths)).rejects.toThrow(CSVValidationException);
   });

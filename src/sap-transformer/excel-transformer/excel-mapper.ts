@@ -49,7 +49,7 @@ export function generateExcelFile(
   excelRows.forEach((x) => {
     x.setCorrelativo(correlative++);
   });
-  return { fileName, rows: excelRows, errors: excelErrorRows };
+  return { fileName, rows: excelRows, errors: excelErrorRows, fileKeys: grouperJournals.keyGrouper };
 }
 
 function createFileName(journals: GroupedJournals, mapper: SAPMapper, index: number): string {
@@ -80,6 +80,7 @@ function generateExcelRow(
       movementAmount,
       accountInfo.accountName,
       accountInfo.accountDescription,
+      rowType,
     );
     row.sociedad = getSAPCompanyCode(keyGrouper, sapMappingTables);
     row.referencia = generateReferenceValue(row.sociedad, entryDate, correlativeFile);

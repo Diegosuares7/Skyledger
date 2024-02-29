@@ -1,6 +1,7 @@
 import { ExcelEnvVariablesMissingException } from '../../../sap-transformer/excel-transformer/exceptions/excel-env-variables-missing.exception';
 import { SAP_ROW_CONSTANTS } from './sap-row.constants';
 import { ExcelDateInvalidFormatException } from '../../../sap-transformer/excel-transformer/exceptions/excel-date-invalid-format.exception';
+import { RowType } from 'sap-transformer/excel-transformer/enums/row-type.enum';
 
 const DATE_FORMAT_REGEX = /^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
 
@@ -51,6 +52,8 @@ export class SAPExcelRow {
   claseDeMovto = '';
   segmento = '';
   grLedgers = '';
+  //esta propieda la agrego para que no sea tan complicado el calculo del redondeo
+  type: RowType;
 
   constructor(
     date: string,
@@ -59,6 +62,7 @@ export class SAPExcelRow {
     amount: number,
     accountDescription: string,
     accountName: string,
+    type: RowType,
   ) {
     this.validateDateFormat(date);
     this.validateEnv();
@@ -73,9 +77,11 @@ export class SAPExcelRow {
     this.fechaContabilizacion = date;
     this.fechaDocto = date;
     this.mesContabilizacion = monthPeriodAccount;
+    //revisar si hay que aplicar el abs
     this.montoEnMonedaDelDocto = Math.abs(amount);
     this.textoPosicion = accountDescription;
     this.referencia1 = accountName;
+    this.type = type;
   }
 
   setCorrelativo(correlativo: number): void {

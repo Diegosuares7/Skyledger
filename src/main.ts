@@ -9,10 +9,9 @@ import { StepProcessHandledException } from './exceptions/step-process-handled.e
 import { getLatestFile } from './s3-latest-file/s3-latest-file';
 import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
 import dotenv from 'dotenv';
+import { checkExcelRoundings } from './rounding-validator/check-excel-roundings';
 import { processExcelsResults } from './generate-excel/process-excels-results';
 dotenv.config();
-
-//const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
 
 async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
   try {
@@ -25,7 +24,8 @@ async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
     );
     const groupedJournals = groupJournalsByFileToExport(skyledgerReport);
     const excelsResults = createExcelsFiles(groupedJournals, sapInfo);
-    await processExcelsResults(excelsResults);
+    const excelsWithRoundingChecked = checkExcelRoundings(excelsResults, sapInfo.roundLimitMappings);
+    await processExcelsResults(excelsWithRoundingChecked);
     return createSuccesResponse();
   } catch (error) {
     if (error instanceof StepProcessHandledException) {
@@ -41,6 +41,7 @@ async function getPathsAndLoadSapInformation(): Promise<SAPMapper> {
     accountsFilePath: `${__dirname}/assets/sap-accounts-table.csv`,
     movementsFilePath: `${__dirname}/assets/sap-movements-table.csv`,
     companyFilePath: `${__dirname}/assets/sap-company-code-table.csv`,
+    roundLimitFilePath: `${__dirname}/assets/sap-round-table.csv`,
   };
   return loadCSVSAPInformation(paths);
 }

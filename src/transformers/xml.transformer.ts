@@ -53,8 +53,8 @@ function transformXmlJournalToJournalReport(xmlJournal: XmlJournal): Journal {
 }
 
 function transformXmlAmountToReportAmount(xmlAmount: JournalLocalAmountElement): Amount {
-  const debitAmount = parseFloat(xmlAmount.DebitAmount);
-  const creditAmount = parseFloat(xmlAmount.CreditAmount);
+  const debitAmount = parseFloat(xmlAmount.DebitAmount.replace(/,/g, ''));
+  const creditAmount = parseFloat(xmlAmount.CreditAmount.replace(/,/g, ''));
   validateAmounts(
     { amount: debitAmount, xmlAmount: xmlAmount.DebitAmount },
     { amount: creditAmount, xmlAmount: xmlAmount.CreditAmount },

@@ -2,6 +2,7 @@
 
 import { SAP_ROW_CONSTANTS } from '../../../entities/sap-transformer/excel/sap-row.constants';
 import { SAPExcelRow } from '../../../entities/sap-transformer/excel/sap-row.entity';
+import { RowType } from '../enums/row-type.enum';
 import { ExcelDateInvalidFormatException } from '../exceptions/excel-date-invalid-format.exception';
 import { ExcelEnvVariablesMissingException } from '../exceptions/excel-env-variables-missing.exception';
 
@@ -28,6 +29,7 @@ describe('SAPExcelRow', () => {
       amount,
       accountDescription,
       accountName,
+      RowType.DEBIT,
     );
 
     // Assert
@@ -63,6 +65,7 @@ describe('SAPExcelRow', () => {
       amount,
       accountDescription,
       accountName,
+      RowType.DEBIT,
     );
 
     // Assert
@@ -92,7 +95,8 @@ describe('SAPExcelRow', () => {
 
     // Act & Assert
     expect(
-      () => new SAPExcelRow(date, currencyCode, monthPeriodAccount, amount, accountDescription, accountName),
+      () =>
+        new SAPExcelRow(date, currencyCode, monthPeriodAccount, amount, accountDescription, accountName, RowType.DEBIT),
     ).toThrow(ExcelDateInvalidFormatException);
   });
 
@@ -108,7 +112,8 @@ describe('SAPExcelRow', () => {
 
     delete process.env.MANDANTE_VALUE;
     expect(
-      () => new SAPExcelRow(date, currencyCode, monthPeriodAccount, amount, accountDescription, accountName),
+      () =>
+        new SAPExcelRow(date, currencyCode, monthPeriodAccount, amount, accountDescription, accountName, RowType.DEBIT),
     ).toThrow(ExcelEnvVariablesMissingException);
     process.env.MANDANTE_VALUE = '12';
   });
@@ -116,7 +121,15 @@ describe('SAPExcelRow', () => {
   // setCorrelativo method sets the correlativo property of SAPExcelRow instance
   it('should set the correlativo property of SAPExcelRow instance when called with a valid correlativo value', () => {
     // Arrange
-    const sapExcelRow = new SAPExcelRow('20211231', 'USD', '202112', 100, 'Account Description', 'Account Name');
+    const sapExcelRow = new SAPExcelRow(
+      '20211231',
+      'USD',
+      '202112',
+      100,
+      'Account Description',
+      'Account Name',
+      RowType.DEBIT,
+    );
     const correlativo = 5;
 
     // Act

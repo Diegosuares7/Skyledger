@@ -4,6 +4,7 @@ import { SAPExcelRow } from '../../entities/sap-transformer/excel/sap-row.entity
 import { SAPExcelFileResult } from '../../entities/sap-transformer/excel/sap-excel-file-result.interface';
 import dotenv from 'dotenv';
 import { Workbook } from 'exceljs';
+import { RowType } from '../../sap-transformer/excel-transformer/enums/row-type.enum';
 dotenv.config();
 
 describe('processExcelsResults', () => {
@@ -12,9 +13,22 @@ describe('processExcelsResults', () => {
       {
         file: {
           fileName: 'file1.xlsx',
+          fileKeys: {
+            currency: 'USD',
+            companyCode: 'JA',
+            accountPeriod: '20220101',
+          },
           rows: [
-            new SAPExcelRow('20220101', 'USD', '202201', 100, 'Descripción Cuenta 1', 'Nombre Cuenta 1'),
-            new SAPExcelRow('20220102', 'EUR', '202201', 200, 'Descripción Cuenta 2', 'Nombre Cuenta 2'),
+            new SAPExcelRow('20220101', 'USD', '202201', 100, 'Descripción Cuenta 1', 'Nombre Cuenta 1', RowType.DEBIT),
+            new SAPExcelRow(
+              '20220102',
+              'EUR',
+              '202201',
+              200,
+              'Descripción Cuenta 2',
+              'Nombre Cuenta 2',
+              RowType.CREDIT,
+            ),
           ],
           errors: [],
         },
@@ -23,7 +37,14 @@ describe('processExcelsResults', () => {
       {
         file: {
           fileName: 'file2.xlsx',
-          rows: [new SAPExcelRow('20220103', 'GBP', '202201', 300, 'Descripción Cuenta 3', 'Nombre Cuenta 3')],
+          fileKeys: {
+            currency: 'GBP',
+            companyCode: 'JA',
+            accountPeriod: '20220101',
+          },
+          rows: [
+            new SAPExcelRow('20220103', 'GBP', '202201', 300, 'Descripción Cuenta 3', 'Nombre Cuenta 3', RowType.DEBIT),
+          ],
           errors: [],
         },
         status: ProcessResponseEnum.SUCCESS,
