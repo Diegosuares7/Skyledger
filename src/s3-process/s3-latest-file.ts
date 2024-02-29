@@ -3,14 +3,10 @@ import { handleStepError } from '../exceptions/step-error.handler';
 import { PROCESS_STEPS } from '../exceptions/steps.constants';
 import 'dotenv/config';
 import { FileNotFoundException } from './exceptions/file-not-found.exception';
+import { configureS3 } from './s3-credentials';
 
 export async function getLatestFile(folderInS3: string): Promise<string> {
-  const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-  });
-
+  const s3 = configureS3();
   const bucketName = process.env.AWS_BUCKET_NAME as string;
 
   try {

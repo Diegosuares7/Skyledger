@@ -110,7 +110,7 @@ export function createExcelFile(rows: SAPExcelRow[]): Workbook {
       '8',
       '8',
       '2',
-      '16',
+      '10',
       '25',
       ' ',
       '2',

@@ -5,5 +5,6 @@ export enum PROCESS_STEPS {
   XML_TRANSFORM_TO_REPORT = 'transform XML to report',
   GROUP_REPORT_TO_FILES = 'Grouping reports to get files registrys',
   GENERATE_EXCEL_REGISTERS = 'Generate excel registers',
+  UPLOAD_EXCEL_FILES = 'Upload excel files to S3',
   ROUNDING_VALIDATION = 'Validate rounding',
 }

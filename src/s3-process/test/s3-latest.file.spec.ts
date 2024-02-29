@@ -1,5 +1,5 @@
 import { FileNotFoundException } from '../exceptions/file-not-found.exception';
-import { getLatestFile } from '../../s3-latest-file/s3-latest-file';
+import { getLatestFile } from '../../s3-process/s3-latest-file';
 import AWS from 'aws-sdk';
 
 describe('getLatestFile', () => {

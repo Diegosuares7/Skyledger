@@ -6,11 +6,12 @@ import { loadCSVSAPInformation } from './sap-transformer/csv-loader/load-sap-map
 import { transformXmlToReport } from './transformers/xml.transformer';
 import { readXmlFromAssets } from './xml-parser/xml-reader';
 import { StepProcessHandledException } from './exceptions/step-process-handled.exception';
-import { getLatestFile } from './s3-latest-file/s3-latest-file';
+import { getLatestFile } from './s3-process/s3-latest-file';
 import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
-import dotenv from 'dotenv';
 import { checkExcelRoundings } from './rounding-validator/check-excel-roundings';
 import { processExcelsResults } from './generate-excel/process-excels-results';
+//import { uploadExcelsToS3 } from './s3-process/s3-upload-excels';
+import dotenv from 'dotenv';
 dotenv.config();
 
 async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
@@ -26,6 +27,7 @@ async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
     const excelsResults = createExcelsFiles(groupedJournals, sapInfo);
     const excelsWithRoundingChecked = checkExcelRoundings(excelsResults, sapInfo.roundLimitMappings);
     await processExcelsResults(excelsWithRoundingChecked);
+    //uploadExcelsToS3(excelFiles, 'upload-files-jetsmart');
     return createSuccesResponse();
   } catch (error) {
     if (error instanceof StepProcessHandledException) {
