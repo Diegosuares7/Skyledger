@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readJson } from 'fs-extra';
 import { resolve } from 'path';
 import { Account } from '../entities/skyledger-transformed-report/account';
 import { Amount } from '../entities/skyledger-transformed-report/amount';
@@ -14,6 +14,7 @@ import { CompanyCodeNotFoundException } from './exceptions/company-code-config-n
 import { handleStepError } from '../exceptions/step-error.handler';
 import { PROCESS_STEPS } from '../exceptions/steps.constants';
 import { InvalidAmountException } from './exceptions/invalid-amount-exception';
+import { AmountValidation } from '../entities/sap-transformer/excel/amount-validation.interface';
 
 export const transformXmlToReport = async (
   xml: SkyledgerXml,
@@ -21,24 +22,24 @@ export const transformXmlToReport = async (
 ): Promise<SkyLedgerReport> => {
   try {
     const journals = await transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
-    return { journals };
+    return { journals, date: xml.Ledger.Header.Date };
   } catch (error) {
     throw handleStepError(error, PROCESS_STEPS.XML_TRANSFORM_TO_REPORT);
   }
 };
 
-async function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePath: string): Promise<Journal[]> {
+export async function transformJournals(xmlJournals: XmlJournal[], configCompanyCodePath: string): Promise<Journal[]> {
   const companyCodeConfigPath = resolve(configCompanyCodePath);
   let codesConfig: { validCodes: string[] };
   try {
-    codesConfig = JSON.parse(await readFile(companyCodeConfigPath, 'utf8'));
+    codesConfig = await readJson(companyCodeConfigPath);
   } catch (error) {
     throw new CompanyCodeNotFoundException(configCompanyCodePath);
   }
   const filteredJournals = xmlJournals.filter(
     (x) => !isEmpty(x.Accounts.Account) && codesConfig.validCodes.includes(x.CompanyCode),
   );
-  return filteredJournals.map((xmlJournal) => transformXmlJournalToJournalReport(xmlJournal));
+  return Promise.all(filteredJournals.map((xmlJournal) => transformXmlJournalToJournalReport(xmlJournal)));
 }
 
 function transformXmlJournalToJournalReport(xmlJournal: XmlJournal): Journal {
@@ -52,13 +53,12 @@ function transformXmlJournalToJournalReport(xmlJournal: XmlJournal): Journal {
 }
 
 function transformXmlAmountToReportAmount(xmlAmount: JournalLocalAmountElement): Amount {
-  const debitAmount = parseFloat(xmlAmount.DebitAmount);
-  const creditAmount = parseFloat(xmlAmount.CreditAmount);
-
-  if (isNaN(debitAmount) || isNaN(creditAmount)) {
-    throw new InvalidAmountException(JSON.stringify(xmlAmount));
-  }
-
+  const debitAmount = parseFloat(xmlAmount.DebitAmount.replace(/,/g, ''));
+  const creditAmount = parseFloat(xmlAmount.CreditAmount.replace(/,/g, ''));
+  validateAmounts(
+    { amount: debitAmount, xmlAmount: xmlAmount.DebitAmount },
+    { amount: creditAmount, xmlAmount: xmlAmount.CreditAmount },
+  );
   return {
     currencyCode: xmlAmount.CurrencyCode,
     debitAmount,
@@ -69,6 +69,7 @@ function transformXmlAmountToReportAmount(xmlAmount: JournalLocalAmountElement):
 function transformXmlAccountToReportAcount(account: XmlAccount): Account {
   return {
     accountName: account.AccountName,
+    accountDescription: account.AccountDescription,
     accountLocalAmounts: isEmpty(account.AccountLocalAmounts)
       ? []
       : account.AccountLocalAmounts.AccountLocalAmount.map((amount: JournalLocalAmountElement) =>
@@ -85,4 +86,16 @@ function isEmpty(obj: unknown): boolean {
     (typeof obj === 'string' && obj.length === 0) ||
     (typeof obj === 'object' && Object.keys(obj).length === 0)
   );
+}
+
+function validateAmounts(debitAmount: AmountValidation, creditAmount: AmountValidation): void {
+  [debitAmount, creditAmount].forEach((amountValidation) => {
+    validateAmount(amountValidation.amount, amountValidation.xmlAmount);
+  });
+}
+
+function validateAmount(amount: number, xmlAmount: string): void {
+  if (isNaN(amount)) {
+    throw new InvalidAmountException(JSON.stringify(xmlAmount));
+  }
 }

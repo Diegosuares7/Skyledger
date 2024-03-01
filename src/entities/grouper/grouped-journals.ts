@@ -4,4 +4,5 @@ import { KeyGrouper } from './key-grouper.entity';
 export interface GroupedJournals {
   keyGrouper: KeyGrouper;
   accountsInfo: AccountInfo[];
+  entryDate: string;
 }

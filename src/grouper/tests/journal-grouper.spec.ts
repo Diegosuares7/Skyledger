@@ -6,6 +6,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should group journals by company code, currency, and account period', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -13,6 +14,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 1',
+              accountDescription: 'Description of Account 1',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -28,6 +30,7 @@ describe('groupJournalsByFileToExport', () => {
             },
             {
               accountName: 'Account 2',
+              accountDescription: 'Description of Account 2',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -49,6 +52,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 3',
+              accountDescription: 'Description of Account 3',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -65,6 +69,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 4',
+              accountDescription: 'Description of Account 4',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -89,8 +94,10 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'USD',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
+          accountDescription: 'Description of Account 1',
           debitAmount: 100,
           creditAmount: 0,
           accountName: 'Account 1',
@@ -99,16 +106,19 @@ describe('groupJournalsByFileToExport', () => {
           debitAmount: 0,
           creditAmount: 200,
           accountName: 'Account 1',
+          accountDescription: 'Description of Account 1',
         },
         {
           debitAmount: 300,
           creditAmount: 0,
           accountName: 'Account 2',
+          accountDescription: 'Description of Account 2',
         },
         {
           debitAmount: 500,
           creditAmount: 0,
           accountName: 'Account 3',
+          accountDescription: 'Description of Account 3',
         },
       ],
     });
@@ -118,11 +128,13 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'EUR',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 0,
           creditAmount: 400,
           accountName: 'Account 2',
+          accountDescription: 'Description of Account 2',
         },
       ],
     });
@@ -132,11 +144,13 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'USD',
         accountPeriod: '2021-02',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 0,
           creditAmount: 600,
           accountName: 'Account 4',
+          accountDescription: 'Description of Account 4',
         },
       ],
     });
@@ -146,6 +160,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should group multiple accounts under the same key', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -153,6 +168,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 1',
+              accountDescription: 'Description of Account 1',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -163,6 +179,7 @@ describe('groupJournalsByFileToExport', () => {
             },
             {
               accountName: 'Account 2',
+              accountDescription: 'Description of Account 2',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -187,16 +204,19 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'USD',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 100,
           creditAmount: 0,
           accountName: 'Account 1',
+          accountDescription: 'Description of Account 1',
         },
         {
           debitAmount: 200,
           creditAmount: 0,
           accountName: 'Account 2',
+          accountDescription: 'Description of Account 2',
         },
       ],
     });
@@ -206,6 +226,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should group multiple amounts under the same account', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -213,6 +234,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 1',
+              accountDescription: 'Description of Account 1',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -242,16 +264,19 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'USD',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 100,
           creditAmount: 0,
           accountName: 'Account 1',
+          accountDescription: 'Description of Account 1',
         },
         {
           debitAmount: 0,
           creditAmount: 200,
           accountName: 'Account 1',
+          accountDescription: 'Description of Account 1',
         },
       ],
     });
@@ -261,6 +286,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should return an empty Map object when the report is empty', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [],
     };
 
@@ -275,6 +301,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should not add any entry to the Map object when a journal has no accounts', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -295,6 +322,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should not add any entry to the AccountInfo array when a journal has accounts with no accountLocalAmounts', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -302,6 +330,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 1',
+              accountDescription: 'Description of Account 1',
               accountLocalAmounts: [],
             },
           ],
@@ -320,6 +349,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should add the account to the AccountInfo array only if at least one of the amounts is greater than zero', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -327,6 +357,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 1',
+              accountDescription: 'Description of Account 1',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -342,6 +373,7 @@ describe('groupJournalsByFileToExport', () => {
             },
             {
               accountName: 'Account 2',
+              accountDescription: 'Description of Account 2',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -371,16 +403,19 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'USD',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 0,
           creditAmount: 200,
           accountName: 'Account 1',
+          accountDescription: 'Description of Account 1',
         },
         {
           debitAmount: 300,
           creditAmount: 0,
           accountName: 'Account 2',
+          accountDescription: 'Description of Account 2',
         },
       ],
     });
@@ -390,6 +425,7 @@ describe('groupJournalsByFileToExport', () => {
   it('should add the account to the AccountInfo array regardless of the amount value when a journal has accountLocalAmounts with only debit or credit amounts', () => {
     // Arrange
     const report: SkyLedgerReport = {
+      date: '20210101',
       journals: [
         {
           companyCode: 'ABC',
@@ -397,6 +433,7 @@ describe('groupJournalsByFileToExport', () => {
           accounts: [
             {
               accountName: 'Account 1',
+              accountDescription: 'Description of Account 1',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -407,6 +444,7 @@ describe('groupJournalsByFileToExport', () => {
             },
             {
               accountName: 'Account 2',
+              accountDescription: 'Description of Account 2',
               accountLocalAmounts: [
                 {
                   currencyCode: 'USD',
@@ -436,16 +474,19 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'USD',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 100,
           creditAmount: 0,
           accountName: 'Account 1',
+          accountDescription: 'Description of Account 1',
         },
         {
           debitAmount: 300,
           creditAmount: 0,
           accountName: 'Account 2',
+          accountDescription: 'Description of Account 2',
         },
       ],
     });
@@ -455,11 +496,13 @@ describe('groupJournalsByFileToExport', () => {
         currency: 'EUR',
         accountPeriod: '2021-01',
       },
+      entryDate: '20210101',
       accountsInfo: [
         {
           debitAmount: 0,
           creditAmount: 400,
           accountName: 'Account 2',
+          accountDescription: 'Description of Account 2',
         },
       ],
     });

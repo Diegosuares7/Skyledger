@@ -1,26 +1,33 @@
-import { ProcessResponse } from '@entities/process-response/process-response.entity';
-import { SAPMapper } from '@entities/sap-transformer/sap-mapper';
+import { ProcessResponse } from './entities/process-response/process-response.entity';
+import { SAPMapper } from './entities/sap-transformer/mappings/sap-mapper';
 import { createErrorResponse, createSuccesResponse } from './response-handler/create-process-response';
 import { groupJournalsByFileToExport } from './grouper/journal-grouper';
 import { loadCSVSAPInformation } from './sap-transformer/csv-loader/load-sap-mappings';
 import { transformXmlToReport } from './transformers/xml.transformer';
 import { readXmlFromAssets } from './xml-parser/xml-reader';
 import { StepProcessHandledException } from './exceptions/step-process-handled.exception';
-
-const fileName = `${__dirname}/assets/gl.20240105015614.xml`;
+import { getLatestFile } from './s3-process/s3-latest-file';
+import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
+import { checkExcelRoundings } from './rounding-validator/check-excel-roundings';
+import { processExcelsResults } from './generate-excel/process-excels-results';
+//import { uploadExcelsToS3 } from './s3-process/s3-upload-excels';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
   try {
+    const file = await getLatestFile('test-jest');
     const sapInfo = await getPathsAndLoadSapInformation();
-    const xmlParsed = await readXmlFromAssets(fileName);
+    const xmlParsed = await readXmlFromAssets(file);
     const skyledgerReport = await transformXmlToReport(
       xmlParsed,
       `${__dirname}/transformers/assets/company-code.config.json`,
     );
     const groupedJournals = groupJournalsByFileToExport(skyledgerReport);
-    //TODO: Mapear cuentas con la info de SAP
-    console.log(sapInfo);
-    console.log(groupedJournals);
+    const excelsResults = createExcelsFiles(groupedJournals, sapInfo);
+    const excelsWithRoundingChecked = checkExcelRoundings(excelsResults, sapInfo.roundLimitMappings);
+    await processExcelsResults(excelsWithRoundingChecked);
+    //uploadExcelsToS3(excelFiles, 'upload-files-jetsmart');
     return createSuccesResponse();
   } catch (error) {
     if (error instanceof StepProcessHandledException) {
@@ -36,6 +43,7 @@ async function getPathsAndLoadSapInformation(): Promise<SAPMapper> {
     accountsFilePath: `${__dirname}/assets/sap-accounts-table.csv`,
     movementsFilePath: `${__dirname}/assets/sap-movements-table.csv`,
     companyFilePath: `${__dirname}/assets/sap-company-code-table.csv`,
+    roundLimitFilePath: `${__dirname}/assets/sap-round-table.csv`,
   };
   return loadCSVSAPInformation(paths);
 }
