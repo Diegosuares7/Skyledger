@@ -22,6 +22,6 @@ export function createExcelsFiles(
 function generateExcelFileResult(file: SAPExcelFile): SAPExcelFileResult {
   return {
     file,
-    status: !file.errors.length ? ProcessResponseEnum.SUCCESS : ProcessResponseEnum.SUCCESS_WITH_ERRORS,
+    status: !file.errors.length ? ProcessResponseEnum.SUCCESS : ProcessResponseEnum.ERROR,
   };
 }

@@ -15,6 +15,7 @@ import { handleStepError } from '../exceptions/step-error.handler';
 import { PROCESS_STEPS } from '../exceptions/steps.constants';
 import { InvalidAmountException } from './exceptions/invalid-amount-exception';
 import { AmountValidation } from '../entities/sap-transformer/excel/amount-validation.interface';
+import { round } from '../utils/round';
 
 export const transformXmlToReport = async (
   xml: SkyledgerXml,
@@ -59,11 +60,8 @@ function transformXmlAmountToReportAmount(xmlAmount: JournalLocalAmountElement):
     { amount: debitAmount, xmlAmount: xmlAmount.DebitAmount },
     { amount: creditAmount, xmlAmount: xmlAmount.CreditAmount },
   );
-  return {
-    currencyCode: xmlAmount.CurrencyCode,
-    debitAmount,
-    creditAmount,
-  };
+
+  return transformAmountsDependingOfTheSign(debitAmount, creditAmount, xmlAmount.CurrencyCode);
 }
 
 function transformXmlAccountToReportAcount(account: XmlAccount): Account {
@@ -98,4 +96,26 @@ function validateAmount(amount: number, xmlAmount: string): void {
   if (isNaN(amount)) {
     throw new InvalidAmountException(JSON.stringify(xmlAmount));
   }
+}
+
+// si el debito es negativo lo paso a la columna de credito y viceversa
+function transformAmountsDependingOfTheSign(debitAmount: number, creditAmount: number, currencyCode: string): Amount {
+  if (debitAmount < 0 && creditAmount > 0) {
+    const oldDebAmount = debitAmount;
+    debitAmount = creditAmount;
+    creditAmount = oldDebAmount;
+  }
+  if (debitAmount < 0) {
+    creditAmount += debitAmount;
+    debitAmount = 0;
+  }
+  if (creditAmount > 0) {
+    debitAmount += creditAmount;
+    creditAmount = 0;
+  }
+  return {
+    currencyCode: currencyCode,
+    debitAmount: round(debitAmount),
+    creditAmount: round(creditAmount),
+  };
 }

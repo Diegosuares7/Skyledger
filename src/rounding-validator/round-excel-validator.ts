@@ -5,6 +5,7 @@ import { SAPRoundMapper } from '../entities/sap-transformer/mappings/sap-round-m
 import { InvalidCurrencyForRoundingException } from './exceptions/invalid-currency-for-rounding.exception';
 import { ROUNDING_VALIDATION_ERROR_MESSAGES } from './exceptions/rounding-validation-error-messages';
 import { SAPExcelFile } from '../entities/sap-transformer/excel/sap-excel-file.interface';
+import { round } from '../utils/round';
 
 /**
  * Checks if the sum of the amounts in a SAP Excel file exceeds a specified rounding limit.
@@ -37,11 +38,12 @@ function calculateSum(excel: SAPExcelFile): number {
   //verificar el tema del abs
   for (const row of excel.rows) {
     if (row.type === RowType.CREDIT) {
-      sum -= row.montoEnMonedaDelDocto;
+      sum = round(sum - row.montoEnMonedaDelDocto);
     } else if (row.type === RowType.DEBIT) {
-      sum += row.montoEnMonedaDelDocto;
+      sum = round(sum + row.montoEnMonedaDelDocto);
     }
   }
+
   return sum;
 }
 
@@ -50,12 +52,18 @@ function checkAndUpdateResult(
   currencyLimit: SAPRoundMapper,
   sum: number,
 ): SAPExcelFileResult {
-  if (Math.abs(sum) >= currencyLimit.value) {
+  const exceedsLimitRoundingValue = Math.abs(sum) >= currencyLimit.value;
+  if (exceedsLimitRoundingValue) {
     excelResult.status = ProcessResponseEnum.ERROR;
     excelResult.errorMessage = ROUNDING_VALIDATION_ERROR_MESSAGES.INVALID_ROUNDING(
       currencyLimit.currencyCode,
       currencyLimit.value,
     );
+    return excelResult;
+  } else if (!exceedsLimitRoundingValue && sum !== 0) {
+    const lastAmount = excelResult.file!.rows[excelResult.file!.rows.length - 1].montoEnMonedaDelDocto;
+    excelResult.file!.rows[excelResult.file!.rows.length - 1].montoEnMonedaDelDocto = round(lastAmount + sum);
   }
+  excelResult.status = ProcessResponseEnum.SUCCESS;
   return excelResult;
 }

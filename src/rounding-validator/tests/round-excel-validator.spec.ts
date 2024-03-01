@@ -180,3 +180,75 @@ describe('validateExcelRounding', () => {
     expect(result.errorMessage).toBeUndefined();
   });
 });
+
+it('should adjust rounding for the last row and sum to zero when necessary', () => {
+  // Arrange
+  const excelResult: SAPExcelFileResult = {
+    file: {
+      fileName: 'xxxxxxx',
+      errors: [],
+      fileKeys: {
+        currency: 'USD',
+        companyCode: 'JA',
+        accountPeriod: '20220101',
+      },
+      rows: [
+        new SAPExcelRow('20220101', 'USD', '202201', 50, '', '', RowType.DEBIT),
+        new SAPExcelRow('20220101', 'USD', '202201', 50, '', '', RowType.DEBIT),
+        new SAPExcelRow('20220101', 'USD', '202201', 45, '', '', RowType.CREDIT),
+        new SAPExcelRow('20220101', 'USD', '202201', 54.94, '', '', RowType.CREDIT),
+      ],
+    },
+    status: ProcessResponseEnum.SUCCESS,
+  };
+  const roundingLimitMapper: Record<string, SAPRoundMapper> = {
+    USD: {
+      currencyCode: 'USD',
+      value: 0.1,
+    },
+  };
+
+  // Act
+  const result = validateExcelRounding(excelResult, roundingLimitMapper);
+
+  // Assert
+  expect(result).toBe(excelResult);
+  expect(result.status).toBe(ProcessResponseEnum.SUCCESS);
+  expect(result.file!.rows[3].montoEnMonedaDelDocto).toEqual(55);
+});
+
+it('should adjust rounding for the last row and sum to zero when necessary', () => {
+  // Arrange
+  const excelResult: SAPExcelFileResult = {
+    file: {
+      fileName: 'xxxxxxx',
+      errors: [],
+      fileKeys: {
+        currency: 'USD',
+        companyCode: 'JA',
+        accountPeriod: '20220101',
+      },
+      rows: [
+        new SAPExcelRow('20220101', 'USD', '202201', 50, '', '', RowType.DEBIT),
+        new SAPExcelRow('20220101', 'USD', '202201', 50, '', '', RowType.DEBIT),
+        new SAPExcelRow('20220101', 'USD', '202201', 45, '', '', RowType.CREDIT),
+        new SAPExcelRow('20220101', 'USD', '202201', 55.08, '', '', RowType.CREDIT),
+      ],
+    },
+    status: ProcessResponseEnum.SUCCESS,
+  };
+  const roundingLimitMapper: Record<string, SAPRoundMapper> = {
+    USD: {
+      currencyCode: 'USD',
+      value: 0.1,
+    },
+  };
+
+  // Act
+  const result = validateExcelRounding(excelResult, roundingLimitMapper);
+
+  // Assert
+  expect(result).toBe(excelResult);
+  expect(result.status).toBe(ProcessResponseEnum.SUCCESS);
+  expect(result.file!.rows[3].montoEnMonedaDelDocto).toEqual(55);
+});

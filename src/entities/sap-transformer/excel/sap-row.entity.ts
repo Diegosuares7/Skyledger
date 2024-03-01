@@ -1,7 +1,8 @@
 import { ExcelEnvVariablesMissingException } from '../../../sap-transformer/excel-transformer/exceptions/excel-env-variables-missing.exception';
 import { SAP_ROW_CONSTANTS } from './sap-row.constants';
 import { ExcelDateInvalidFormatException } from '../../../sap-transformer/excel-transformer/exceptions/excel-date-invalid-format.exception';
-import { RowType } from 'sap-transformer/excel-transformer/enums/row-type.enum';
+import { RowType } from '../../../sap-transformer/excel-transformer/enums/row-type.enum';
+import { round } from '../../../utils/round';
 
 const DATE_FORMAT_REGEX = /^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
 
@@ -77,8 +78,8 @@ export class SAPExcelRow {
     this.fechaContabilizacion = date;
     this.fechaDocto = date;
     this.mesContabilizacion = monthPeriodAccount;
-    //revisar si hay que aplicar el abs
-    this.montoEnMonedaDelDocto = Math.abs(amount);
+    //revisar: APLICO ABS Y REDONDEO A DOS DECIMALES
+    this.montoEnMonedaDelDocto = round(Math.abs(amount));
     this.textoPosicion = accountDescription;
     this.referencia1 = accountName;
     this.type = type;
