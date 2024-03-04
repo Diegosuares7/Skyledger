@@ -4,6 +4,7 @@ import { PROCESS_STEPS } from '../exceptions/steps.constants';
 import 'dotenv/config';
 import { FileNotFoundException } from './exceptions/file-not-found.exception';
 import { configureS3 } from './s3-credentials';
+import Logger from '../configurations/config-logs/winston.logs';
 
 export async function getLatestFile(folderInS3: string): Promise<string> {
   const s3 = configureS3();
@@ -27,8 +28,10 @@ export async function getLatestFile(folderInS3: string): Promise<string> {
     const s3Object = await s3.getObject(getObjectParams).promise();
     const xmlData = s3Object.Body?.toString('utf-8') || '';
 
+    Logger.info(`Successfull: ${PROCESS_STEPS.READ_FILE_FROM_S3}`);
     return xmlData;
   } catch (error) {
-    throw handleStepError(error, PROCESS_STEPS.XML_PARSE);
+    Logger.error(`Error: ${PROCESS_STEPS.READ_FILE_FROM_S3}:`, error);
+    throw handleStepError(error, PROCESS_STEPS.READ_FILE_FROM_S3);
   }
 }

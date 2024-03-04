@@ -9,6 +9,7 @@ import {
   SkyledgerXml,
 } from '../entities/xml/skyledger-xml.entity';
 import { InvalidXmlException } from './exceptions/invalid-xml.exception';
+import Logger from '../configurations/config-logs/winston.logs';
 
 // Definir tipos para el XML parseado
 interface ParsedXml {
@@ -20,8 +21,10 @@ export async function readXmlFromAssets(xmlData: string): Promise<SkyledgerXml> 
   try {
     const parsedData = await parseXml(xmlData);
     const formattedData = formatAccounts(parsedData);
+    Logger.info(`Successfully: ${PROCESS_STEPS.XML_PARSE}`);
     return formattedData as SkyledgerXml;
   } catch (error) {
+    Logger.error(`Error: ${PROCESS_STEPS.XML_PARSE}:`, error);
     throw handleStepError(error, PROCESS_STEPS.XML_PARSE);
   }
 }

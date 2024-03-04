@@ -15,6 +15,7 @@ import { handleStepError } from '../exceptions/step-error.handler';
 import { PROCESS_STEPS } from '../exceptions/steps.constants';
 import { InvalidAmountException } from './exceptions/invalid-amount-exception';
 import { AmountValidation } from '../entities/sap-transformer/excel/amount-validation.interface';
+import Logger from '../configurations/config-logs/winston.logs';
 import { round } from '../utils/round';
 
 export const transformXmlToReport = async (
@@ -23,8 +24,10 @@ export const transformXmlToReport = async (
 ): Promise<SkyLedgerReport> => {
   try {
     const journals = await transformJournals(xml.Ledger.Record.Journal, configCompanyCodePath);
+    Logger.info(`Successfully: ${PROCESS_STEPS.XML_TRANSFORM_TO_REPORT}`);
     return { journals, date: xml.Ledger.Header.Date };
   } catch (error) {
+    Logger.error(`Error: ${PROCESS_STEPS.XML_TRANSFORM_TO_REPORT}:`, error);
     throw handleStepError(error, PROCESS_STEPS.XML_TRANSFORM_TO_REPORT);
   }
 };

@@ -10,7 +10,7 @@ import { getLatestFile } from './s3-process/s3-latest-file';
 import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
 import { checkExcelRoundings } from './rounding-validator/check-excel-roundings';
 import { processExcelsResults } from './generate-excel/process-excels-results';
-//import { uploadExcelsToS3 } from './s3-process/s3-upload-excels';
+import Logger from './configurations/config-logs/winston.logs';
 import dotenv from 'dotenv';
 import { uploadExcelsToS3 } from './s3-process/s3-upload-excels';
 dotenv.config();
@@ -31,8 +31,10 @@ async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
       excelsWithRoundingChecked.filter((x) => x.status === ProcessResponseEnum.SUCCESS),
     );
     await uploadExcelsToS3(excelFiles, 'upload-files-jetsmart');
+    Logger.info('Successfully execute SkyLedger Integration');
     return createSuccesResponse();
   } catch (error) {
+    Logger.error('Error in SkyLedger', error);
     if (error instanceof StepProcessHandledException) {
       return createErrorResponse(error.getErrorMessage());
     }
@@ -48,6 +50,7 @@ async function getPathsAndLoadSapInformation(): Promise<SAPMapper> {
     companyFilePath: `${__dirname}/assets/sap-company-code-table.csv`,
     roundLimitFilePath: `${__dirname}/assets/sap-round-table.csv`,
   };
+  Logger.info('Successfully get paths and load SAP information');
   return loadCSVSAPInformation(paths);
 }
 

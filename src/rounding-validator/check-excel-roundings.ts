@@ -3,6 +3,7 @@ import { SAPExcelFileResult } from '../entities/sap-transformer/excel/sap-excel-
 import { validateExcelRounding } from './round-excel-validator';
 import { StepProcessHandledException } from '../exceptions/step-process-handled.exception';
 import { SAPRoundMapper } from '../entities/sap-transformer/mappings/sap-round-mapper';
+import Logger from '../configurations/config-logs/winston.logs';
 
 /**
  * Validates the rounding of Excel files based on the provided rounding limit mapper.
@@ -17,8 +18,10 @@ export function checkExcelRoundings(
   return excelResults.map((excelResult: SAPExcelFileResult) => {
     if (excelResult.status === ProcessResponseEnum.SUCCESS) {
       try {
+        Logger.info(`Successfully check excel rounding for file ${excelResult.file?.fileName}`);
         return validateExcelRounding(excelResult, roundingLimitMapper);
       } catch (e) {
+        Logger.error(`Error in check excel rounding for file ${excelResult.file?.fileName}:`, e);
         const message = e instanceof StepProcessHandledException ? e.getErrorMessage() : e.message;
         return {
           ...excelResult,

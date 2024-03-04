@@ -4,6 +4,7 @@ import { GroupedJournals } from '../entities/grouper/grouped-journals';
 import { KeyGrouper } from '../entities/grouper/key-grouper.entity';
 import { SkyLedgerReport } from '../entities/skyledger-transformed-report/skyledger-report';
 import { PROCESS_STEPS } from '../exceptions/steps.constants';
+import Logger from '../configurations/config-logs/winston.logs';
 
 export function groupJournalsByFileToExport(report: SkyLedgerReport): Map<string, GroupedJournals> {
   try {
@@ -34,8 +35,10 @@ export function groupJournalsByFileToExport(report: SkyLedgerReport): Map<string
       });
     });
 
+    Logger.info(`Successfully: ${PROCESS_STEPS.GROUP_REPORT_TO_FILES}`);
     return reportMap;
   } catch (error) {
+    Logger.error(`Error: ${PROCESS_STEPS.GROUP_REPORT_TO_FILES}:`, error);
     throw handleStepError(error, PROCESS_STEPS.GROUP_REPORT_TO_FILES);
   }
 }

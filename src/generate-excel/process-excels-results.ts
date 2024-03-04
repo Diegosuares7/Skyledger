@@ -2,6 +2,7 @@ import { ProcessResponseEnum } from '../entities/process-response/process-respon
 import { SAPExcelFileResult } from '../entities/sap-transformer/excel/sap-excel-file-result.interface';
 import { createExcelFile } from './generate-excel';
 import { ProcessedExcelFile } from '../entities/excel/processed-excel-file';
+import Logger from '../configurations/config-logs/winston.logs';
 
 export async function processExcelsResults(excelsResults: SAPExcelFileResult[]): Promise<ProcessedExcelFile[]> {
   const processedExcelFiles: ProcessedExcelFile[] = [];
@@ -19,5 +20,6 @@ export async function processExcelsResults(excelsResults: SAPExcelFileResult[]):
     }
   }
 
+  Logger.info(`Successfully process excels results`);
   return processedExcelFiles;
 }
