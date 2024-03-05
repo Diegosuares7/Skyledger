@@ -54,7 +54,7 @@ function checkAndUpdateResult(
 ): SAPExcelFileResult {
   const exceedsLimitRoundingValue = Math.abs(sum) >= currencyLimit.value;
   if (exceedsLimitRoundingValue) {
-    excelResult.status = ProcessResponseEnum.ERROR;
+    excelResult.status = ProcessResponseEnum.ERROR_ROUNDING;
     excelResult.errorMessage = ROUNDING_VALIDATION_ERROR_MESSAGES.INVALID_ROUNDING(
       currencyLimit.currencyCode,
       currencyLimit.value,

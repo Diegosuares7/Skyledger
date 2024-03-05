@@ -121,10 +121,10 @@ describe('processExcelsResults', () => {
       // Verifica que la longitud del array sea correcta
       expect(processedExcelFiles).toHaveLength(2);
       // Verifica las propiedades de cada objeto ProcessedExcelFile
-      expect(processedExcelFiles[0]).toHaveProperty('fileName', 'file1.xlsx');
-      expect(processedExcelFiles[0].workbook).toBeInstanceOf(Workbook);
-      expect(processedExcelFiles[1]).toHaveProperty('fileName', 'file2.xlsx');
-      expect(processedExcelFiles[1].workbook).toBeInstanceOf(Workbook);
+      expect(processedExcelFiles[0].excelFile).toHaveProperty('fileName', 'file1.xlsx');
+      expect(processedExcelFiles[0].excelFile?.workbook).toBeInstanceOf(Workbook);
+      expect(processedExcelFiles[1].excelFile).toHaveProperty('fileName', 'file2.xlsx');
+      expect(processedExcelFiles[1].excelFile?.workbook).toBeInstanceOf(Workbook);
     },
   );
 });

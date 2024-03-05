@@ -1,0 +1,93 @@
+  <?xml version="1.0" encoding="UTF-8"?>
+      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+        <xs:element name="Ledger">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Header">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Date" type="xs:string"/>
+                    <xs:element name="Airline" type="xs:string"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Record" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Journal" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="AccountPeriod" type="xs:string"/>
+                          <xs:element name="CompanyCode" type="xs:string"/>
+                          <xs:element name="JournalEntry" type="xs:string"/>
+                          <xs:element name="JournalEntryDescription" type="xs:string"/>
+                          <xs:element name="JournalLocalAmounts" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="JournalLocalAmount" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="CurrencyCode" type="xs:string"/>
+                                      <xs:element name="DebitAmount" type="xs:string"/>
+                                      <xs:element name="CreditAmount" type="xs:string"/>
+                                      <xs:element name="TotalAmount" type="xs:string"/>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="HostDebitAmount" type="xs:string"/>
+                          <xs:element name="HostCreditAmount" type="xs:string"/>
+                          <xs:element name="HostTotalAmount" type="xs:string"/>
+                          <xs:element name="HostCurrency" type="xs:string"/>
+                          <xs:element name="Accounts">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Account" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="AccountName" type="xs:string"/>
+                                      <xs:element name="AccountDescription" type="xs:string"/>
+                                      <xs:element name="CenterName" type="xs:string"/>
+                                      <xs:element name="CenterDescription" minOccurs="0" type="xs:string"/>
+                                      <xs:element name="AccountLocalAmounts" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="AccountLocalAmount" maxOccurs="unbounded">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="CurrencyCode" type="xs:string"/>
+                                                  <xs:element name="DebitAmount" type="xs:string"/>
+                                                  <xs:element name="CreditAmount" type="xs:string"/>
+                                                  <xs:element name="TotalAmount" type="xs:string"/>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element name="HostCurrency" type="xs:string"/>
+                                      <xs:element name="HostDebitAmount" type="xs:string"/>
+                                      <xs:element name="HostCreditAmount" type="xs:string"/>
+                                      <xs:element name="HostTotalAmount" type="xs:string"/>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:schema>
+</xs:schema>
+      

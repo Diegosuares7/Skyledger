@@ -1,18 +1,18 @@
-import { ProcessResponse, ProcessResponseEnum } from './entities/process-response/process-response.entity';
+import dotenv from 'dotenv';
+import Logger from './configurations/config-logs/winston.logs';
+import { ProcessResponse } from './entities/process-response/process-response.entity';
 import { SAPMapper } from './entities/sap-transformer/mappings/sap-mapper';
-import { createErrorResponse, createSuccesResponse } from './response-handler/create-process-response';
+import { StepProcessHandledException } from './exceptions/step-process-handled.exception';
+import { processExcelsResults } from './generate-excel/process-excels-results';
 import { groupJournalsByFileToExport } from './grouper/journal-grouper';
+import { createErrorResponse, createSuccesResponse } from './response-handler/create-process-response';
+import { checkExcelRoundings } from './rounding-validator/check-excel-roundings';
+import { getLatestFile } from './s3-process/s3-latest-file';
+import { uploadExcelsToS3 } from './s3-process/s3-upload-excels';
 import { loadCSVSAPInformation } from './sap-transformer/csv-loader/load-sap-mappings';
+import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
 import { transformXmlToReport } from './transformers/xml.transformer';
 import { readXmlFromAssets } from './xml-parser/xml-reader';
-import { StepProcessHandledException } from './exceptions/step-process-handled.exception';
-import { getLatestFile } from './s3-process/s3-latest-file';
-import { createExcelsFiles } from './sap-transformer/excel-transformer/excel-file-factory';
-import { checkExcelRoundings } from './rounding-validator/check-excel-roundings';
-import { processExcelsResults } from './generate-excel/process-excels-results';
-import Logger from './configurations/config-logs/winston.logs';
-import dotenv from 'dotenv';
-import { uploadExcelsToS3 } from './s3-process/s3-upload-excels';
 dotenv.config();
 
 async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
@@ -25,14 +25,13 @@ async function executeSkyLedgerIntegration(): Promise<ProcessResponse> {
       `${__dirname}/transformers/assets/company-code.config.json`,
     );
     const groupedJournals = groupJournalsByFileToExport(skyledgerReport);
-    const excelsResults = createExcelsFiles(groupedJournals, sapInfo);
-    const excelsWithRoundingChecked = checkExcelRoundings(excelsResults, sapInfo.roundLimitMappings);
-    const excelFiles = await processExcelsResults(
-      excelsWithRoundingChecked.filter((x) => x.status === ProcessResponseEnum.SUCCESS),
-    );
-    await uploadExcelsToS3(excelFiles, 'upload-files-jetsmart');
+    const excelsToProcess = createExcelsFiles(groupedJournals, sapInfo);
+    const excelsWithRoundingChecked = checkExcelRoundings(excelsToProcess, sapInfo.roundLimitMappings);
+    const excelFiles = await processExcelsResults(excelsWithRoundingChecked);
+    const excelFilesUploaded = await uploadExcelsToS3(excelFiles, 'upload-files-jetsmart');
     Logger.info('Successfully execute SkyLedger Integration');
-    return createSuccesResponse();
+    const response = createSuccesResponse(excelFilesUploaded);
+    return response;
   } catch (error) {
     Logger.error('Error in SkyLedger', error);
     if (error instanceof StepProcessHandledException) {

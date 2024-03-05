@@ -1,11 +1,13 @@
+import { PortalRequest } from '../portal-request/portal-process.request';
+
 export interface ProcessResponse {
   status: ProcessResponseEnum;
   errorMessage?: string;
-  metadata?: Record<string, string>;
+  portalRequest: PortalRequest;
 }
 
 export enum ProcessResponseEnum {
   SUCCESS = 'success',
   ERROR = 'error',
-  SUCCESS_WITH_ERRORS = 'success_with_errors',
+  ERROR_ROUNDING = 'error_rounding',
 }

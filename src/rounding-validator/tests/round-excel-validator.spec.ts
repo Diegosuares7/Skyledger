@@ -114,7 +114,7 @@ describe('validateExcelRounding', () => {
 
     // Assert
     expect(result).toBe(excelResult);
-    expect(result.status).toBe(ProcessResponseEnum.ERROR);
+    expect(result.status).toBe(ProcessResponseEnum.ERROR_ROUNDING);
     expect(result.errorMessage).toBeDefined();
   });
 
